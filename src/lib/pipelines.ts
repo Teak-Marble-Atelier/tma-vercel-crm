@@ -1,0 +1,99 @@
+import type { Side } from "./types";
+
+export interface Stage { key: string; label: string; }
+export interface PipelineDef {
+  table: string;
+  // value fields tried in order for the card amount
+  valueFields: string[];
+  stages: Stage[];
+}
+
+// The two commerce/acquisition spines, straight from migrations 0003/0004.
+export const PIPELINES: Record<Side, PipelineDef> = {
+  tma: {
+    table: "tma_deals",
+    valueFields: ["value_cents"],
+    stages: [
+      { key: "lead", label: "Lead" },
+      { key: "qualified", label: "Qualified" },
+      { key: "quoted", label: "Quoted" },
+      { key: "order", label: "Order" },
+      { key: "fulfilling", label: "Fulfilling" },
+      { key: "delivered", label: "Delivered" },
+      { key: "post_sale", label: "Post-sale" },
+    ],
+  },
+  roark: {
+    table: "roark_acquisitions",
+    valueFields: ["acquired_cents", "offer_cents", "budget_cents"],
+    stages: [
+      { key: "inquiry", label: "Inquiry" },
+      { key: "consultation", label: "Consultation" },
+      { key: "sourcing", label: "Sourcing" },
+      { key: "gia_verify", label: "GIA verify" },
+      { key: "offer", label: "Offer" },
+      { key: "acquired", label: "Acquired" },
+      { key: "aftercare", label: "Aftercare" },
+    ],
+  },
+};
+
+export interface TableDef {
+  key: string;
+  label: string;
+  table: string;
+  columns: { field: string; label: string; kind?: "money" | "date" | "bool" | "pill" }[];
+}
+
+// Secondary entities, rendered as real navigable lists (read). Detail/edit
+// drawers for these are the next increment.
+export const TABLES: Record<Side, TableDef[]> = {
+  tma: [
+    {
+      key: "suppliers", label: "Suppliers", table: "tma_suppliers",
+      columns: [
+        { field: "name", label: "Supplier" },
+        { field: "stage", label: "Stage", kind: "pill" },
+        { field: "tier", label: "Tier", kind: "pill" },
+        { field: "category", label: "Category" },
+        { field: "dealer_margin_pct", label: "Margin %" },
+        { field: "agreement_status", label: "Agreement" },
+      ],
+    },
+    {
+      key: "orders", label: "Orders", table: "tma_orders",
+      columns: [
+        { field: "order_number", label: "Order" },
+        { field: "status", label: "Status", kind: "pill" },
+        { field: "fulfillment", label: "Fulfillment", kind: "pill" },
+        { field: "total_cents", label: "Total", kind: "money" },
+        { field: "placed_at", label: "Placed", kind: "date" },
+      ],
+    },
+  ],
+  roark: [
+    {
+      key: "inventory", label: "Inventory", table: "roark_inventory",
+      columns: [
+        { field: "sku", label: "Stock #" },
+        { field: "shape", label: "Shape" },
+        { field: "carat", label: "Carat" },
+        { field: "color", label: "Color" },
+        { field: "clarity", label: "Clarity" },
+        { field: "status", label: "Status", kind: "pill" },
+        { field: "is_africa_direct", label: "Africa Direct", kind: "bool" },
+        { field: "ask_cents", label: "Ask", kind: "money" },
+      ],
+    },
+    {
+      key: "provenance", label: "Provenance", table: "roark_provenance",
+      columns: [
+        { field: "event", label: "Event", kind: "pill" },
+        { field: "origin_country", label: "Origin" },
+        { field: "kp_certificate", label: "KP Cert" },
+        { field: "occurred_on", label: "Date", kind: "date" },
+        { field: "actor", label: "Actor" },
+      ],
+    },
+  ],
+};
