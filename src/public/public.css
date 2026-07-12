@@ -1,0 +1,96 @@
+/* src/public/public.css — customer-facing quote + status surfaces.
+   Scoped under .q-page so nothing here touches the CRM app shell. Uses the
+   TMA token set already defined in index.css (activated via data-side="tma"). */
+
+.q-page { min-height:100%; background:var(--bg); color:var(--ink);
+  font-family:Georgia, "Times New Roman", serif; display:flex; flex-direction:column; align-items:center; }
+.q-band { width:100%; background:var(--accent); padding:22px 0; text-align:center; }
+.q-brand { color:#FBFAF7; font-size:19px; letter-spacing:.22em; }
+.q-card { width:100%; max-width:680px; background:var(--panel); margin:26px 18px;
+  padding:34px 34px 30px; border-radius:var(--radius); box-shadow:var(--shadow);
+  border-top:3px solid var(--accent-2); }
+.q-foot { color:var(--muted); font-size:12px; padding:0 18px 34px; text-align:center; }
+
+.q-head { display:flex; justify-content:space-between; align-items:flex-start; gap:16px;
+  border-bottom:1px solid var(--line); padding-bottom:18px; margin-bottom:20px; }
+.q-eyebrow { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--muted); }
+.q-number { font-size:22px; color:var(--accent); margin-top:4px; }
+.q-valid { text-align:right; font-size:13px; color:var(--muted); line-height:1.5; }
+.q-stagepill { display:inline-block; background:var(--accent); color:var(--accent-ink);
+  padding:6px 14px; border-radius:999px; font-family:var(--font); font-size:13px; font-weight:600; }
+.q-stagepill.q-exc { background:#8A1C0A; }
+
+.q-table { width:100%; border-collapse:collapse; font-family:var(--font); font-size:14px; }
+.q-table th { text-align:left; background:var(--accent); color:var(--accent-ink);
+  padding:8px 10px; font-size:12px; font-weight:600; }
+.q-table td { padding:10px; border-bottom:1px solid var(--line); vertical-align:top; }
+.q-c { text-align:center; } .q-r { text-align:right; }
+.q-sku { color:var(--muted); font-size:12px; margin-top:2px; }
+.q-tag { display:inline-block; margin-left:8px; font-size:11px; color:var(--accent);
+  border:1px solid var(--accent-2); border-radius:999px; padding:1px 8px; vertical-align:middle; }
+
+.q-totals { margin:18px 0 4px; margin-left:auto; width:min(280px,100%); font-family:var(--font); font-size:14px; }
+.q-totals > div { display:flex; justify-content:space-between; padding:4px 0; color:var(--muted); }
+.q-grand { border-top:1px solid var(--accent-2); margin-top:6px; padding-top:8px !important;
+  color:var(--accent) !important; font-size:17px; font-weight:700; }
+
+.q-terms { background:var(--panel-2); border-left:2px solid var(--accent-2);
+  padding:14px 16px; margin-top:18px; font-size:13px; line-height:1.6; }
+.q-terms p { margin:0 0 8px; } .q-terms p:last-child { margin:0; }
+.q-fine { color:var(--muted); font-size:12px; }
+
+.q-accept { margin-top:24px; border-top:1px solid var(--line); padding-top:20px; }
+.q-accept h3 { margin:0 0 4px; color:var(--accent); font-size:17px; }
+.q-fields { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:14px 0; }
+.q-fields input, .q-asf input { font-family:var(--font); }
+.q-fields input { padding:11px 12px; border:1px solid var(--line); border-radius:8px;
+  background:var(--bg); color:var(--ink); font-size:14px; }
+.q-asf { display:flex; gap:10px; align-items:flex-start; font-family:var(--font);
+  font-size:13px; line-height:1.5; background:#FDF0F0; border-left:2px solid #CC3333;
+  padding:12px; border-radius:6px; margin-bottom:14px; }
+.q-asf input { margin-top:2px; }
+.q-muted { color:var(--muted); font-family:var(--font); font-size:13px; }
+.q-err { color:#8A1C0A; font-family:var(--font); font-size:13px; margin-bottom:10px; }
+.q-btn { font-family:var(--font); background:var(--accent); color:var(--accent-ink);
+  border:none; border-radius:8px; padding:12px 22px; font-size:15px; font-weight:600; }
+.q-btn:disabled { opacity:.6; cursor:default; }
+.q-btn-out { background:transparent; color:var(--accent); border:1px solid var(--accent-2);
+  display:inline-block; margin-top:12px; text-align:center; }
+
+.q-accepted { margin-top:22px; background:var(--panel-2); border-left:2px solid var(--accent-2);
+  padding:18px; border-radius:6px; display:flex; gap:14px; align-items:flex-start;
+  font-family:var(--font); font-size:14px; line-height:1.55; }
+.q-check { width:30px; height:30px; flex:none; border-radius:999px; background:var(--accent);
+  color:var(--accent-ink); display:grid; place-items:center; font-weight:700; }
+
+.q-note { text-align:center; padding:16px 4px; }
+.q-note h2 { color:var(--accent); font-size:20px; margin:0 0 12px; }
+.q-note p { line-height:1.6; }
+.q-contact { margin-top:14px; font-family:var(--font); font-size:13px; color:var(--accent); text-align:center; }
+
+/* ---- status timeline ---- */
+.s-track { display:flex; justify-content:space-between; margin:8px 0 24px; position:relative; }
+.s-track::before { content:""; position:absolute; top:9px; left:5%; right:5%; height:2px; background:var(--line); }
+.s-step { position:relative; z-index:1; display:flex; flex-direction:column; align-items:center;
+  gap:8px; flex:1; text-align:center; }
+.s-dot { width:20px; height:20px; border-radius:999px; background:var(--panel);
+  border:2px solid var(--line); }
+.s-done .s-dot { background:var(--accent); border-color:var(--accent); }
+.s-now .s-dot { box-shadow:0 0 0 4px rgba(122,63,40,.18); }
+.s-label { font-family:var(--font); font-size:11px; color:var(--muted); text-transform:capitalize; max-width:70px; }
+.s-done .s-label { color:var(--ink); }
+
+.s-window, .s-freight, .s-prep { margin-top:20px; }
+.s-window h3, .s-freight h3, .s-prep h3 { color:var(--accent); font-size:15px; margin:0 0 8px; font-family:var(--font); }
+.s-win-dates { font-size:18px; }
+.s-grid { display:grid; grid-template-columns:auto 1fr; gap:6px 18px; font-family:var(--font); font-size:14px; }
+.s-grid span:nth-child(odd) { color:var(--muted); }
+.s-prep ul { margin:0; padding-left:18px; font-family:var(--font); font-size:14px; line-height:1.7; }
+.s-inspect { margin-top:20px; background:var(--panel-2); border-left:2px solid var(--accent-2);
+  padding:14px 16px; font-family:var(--font); font-size:13px; line-height:1.6; }
+
+@media (max-width:560px) {
+  .q-card { padding:22px 18px; margin:16px 10px; }
+  .q-fields { grid-template-columns:1fr; }
+  .s-label { font-size:10px; }
+}
