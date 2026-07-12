@@ -8,6 +8,7 @@ import { RecordsView } from "./components/RecordsView";
 import { QuoteBuilder } from "./components/QuoteBuilder";
 import QuotePage from "./public/QuotePage";
 import StatusPage from "./public/StatusPage";
+import UnsubscribePage from "./public/UnsubscribePage";
 import "./public/public.css";
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
           BEFORE the auth gate so a customer link never hits <Login>. */}
       <Route path="/q/:token" element={<QuotePage />} />
       <Route path="/status/:token" element={<StatusPage />} />
+      <Route path="/unsubscribe" element={<UnsubscribePage />} />
 
       {/* Everything else is the internal CRM, behind auth. */}
       <Route path="*" element={<CrmApp session={session} loading={loading} />} />
