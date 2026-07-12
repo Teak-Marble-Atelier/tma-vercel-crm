@@ -3,7 +3,7 @@ import { useSession } from "../state/Session";
 import { TABLES } from "../lib/pipelines";
 
 const TITLES: Record<string, string> = {
-  "/board": "Pipeline", "/contacts": "Contacts",
+  "/board": "Pipeline", "/contacts": "Contacts", "/quote/new": "New Quote",
 };
 
 export function AppShell() {
@@ -33,6 +33,11 @@ export function AppShell() {
               {t.label}
             </NavLink>
           ))}
+          {current.slug === "tma" && (
+            <NavLink to="/quote/new" className={({ isActive }) => (isActive ? "on" : "")}>
+              New Quote
+            </NavLink>
+          )}
         </div>
         <div className="foot">
           <div>{user?.full_name ?? user?.email}</div>

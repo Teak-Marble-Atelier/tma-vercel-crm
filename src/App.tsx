@@ -5,6 +5,7 @@ import { AppShell } from "./components/AppShell";
 import { PipelineBoard } from "./components/PipelineBoard";
 import { ContactsView } from "./components/ContactsView";
 import { RecordsView } from "./components/RecordsView";
+import { QuoteBuilder } from "./components/QuoteBuilder";
 import QuotePage from "./public/QuotePage";
 import StatusPage from "./public/StatusPage";
 import "./public/public.css";
@@ -34,6 +35,7 @@ function CrmApp({ session, loading }: { session: unknown; loading: boolean }) {
         <Route path="/board" element={<PipelineBoard />} />
         <Route path="/contacts" element={<ContactsView />} />
         <Route path="/records/:key" element={<RecordsView />} />
+        <Route path="/quote/new" element={<QuoteBuilder />} />
         <Route path="*" element={<Navigate to="/board" replace />} />
       </Route>
     </Routes>
