@@ -38,6 +38,8 @@ interface Line {
 
 interface MappedProduct {
   gid: string;
+  title: string | null;
+  list_price: number | null;
   terms_class: string;
   supplier: string | null;
   white_glove_available: boolean;
@@ -101,7 +103,7 @@ export function QuoteBuilder() {
           .order("name"),
         supabase
           .from("product_terms_map")
-          .select("shopify_product_gid, terms_class")
+          .select("shopify_product_gid, terms_class, title, list_price")
           .eq("workspace_id", current.id),
         supabase
           .from("product_terms")
@@ -126,12 +128,15 @@ export function QuoteBuilder() {
         const t = termsByClass.get(cls);
         return {
           gid: m.shopify_product_gid as string,
+          title: (m.title as string) ?? null,
+          list_price: m.list_price == null ? null : Number(m.list_price),
           terms_class: cls,
           supplier: (t?.supplier as string) ?? null,
           white_glove_available: Boolean(t?.white_glove_available),
           has_current_terms: Boolean(t),
         };
       });
+      list.sort((a, b) => (a.title ?? a.gid).localeCompare(b.title ?? b.gid));
       setProducts(list);
       setLoading(false);
     }
@@ -165,6 +170,9 @@ export function QuoteBuilder() {
           ? {
               ...l,
               shopify_product_gid: gid,
+              // auto-fill the customer-facing title + price from the mapped product
+              title: p?.title ?? l.title,
+              unit_price: p?.list_price ?? l.unit_price,
               // force white-glove off if this product's terms disallow it
               white_glove_selected: p?.white_glove_available
                 ? l.white_glove_selected
@@ -410,9 +418,7 @@ export function QuoteBuilder() {
                       <option value="">Select product…</option>
                       {products.map((pr) => (
                         <option key={pr.gid} value={pr.gid}>
-                          {pr.terms_class}
-                          {pr.supplier ? ` · ${pr.supplier}` : ""} —{" "}
-                          {shortGid(pr.gid)}
+                          {pr.title ?? shortGid(pr.gid)}
                           {pr.has_current_terms ? "" : " (no current terms)"}
                         </option>
                       ))}

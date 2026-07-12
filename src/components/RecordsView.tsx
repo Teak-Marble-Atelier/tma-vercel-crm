@@ -1,37 +1,42 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import { day, money } from "../lib/format";
 import { TABLES } from "../lib/pipelines";
+import { FORMS } from "../lib/forms";
 import { useSession } from "../state/Session";
+import { RecordFormDrawer } from "./RecordFormDrawer";
+
+type Row = Record<string, unknown>;
 
 // Config-driven list for the secondary entities (suppliers, orders,
-// inventory, provenance). Real, filterable read views; detail/edit next.
+// inventory, provenance) — now with create / edit / delete via the generic
+// RecordFormDrawer, driven by the per-table spec in lib/forms.
 export function RecordsView() {
   const { current } = useSession();
   const { key } = useParams();
   const def = current ? TABLES[current.slug].find((t) => t.key === key) : null;
-  const [rows, setRows] = useState<Record<string, unknown>[]>([]);
-  const [loading, setLoading] = useState(true);
+  const spec = def ? FORMS[def.table] : undefined;
 
-  useEffect(() => {
-    let alive = true;
-    async function load() {
-      if (!current || !def) return;
-      setLoading(true);
-      const { data } = await supabase.from(def.table).select("*")
-        .eq("workspace_id", current.id).limit(500);
-      if (alive) { setRows((data as Record<string, unknown>[]) ?? []); setLoading(false); }
-    }
-    load();
-    return () => { alive = false; };
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+  // undefined = closed, null = create, object = edit
+  const [editing, setEditing] = useState<Row | null | undefined>(undefined);
+
+  const load = useCallback(async () => {
+    if (!current || !def) return;
+    setLoading(true);
+    const { data } = await supabase.from(def.table).select("*")
+      .eq("workspace_id", current.id).limit(500);
+    setRows((data as Row[]) ?? []);
+    setLoading(false);
   }, [current, def]);
 
-  if (!def) return <div className="center-note">Unknown view.</div>;
-  if (loading) return <div className="center-note">Loading {def.label.toLowerCase()}…</div>;
-  if (!rows.length) return <div className="center-note">No {def.label.toLowerCase()} yet.</div>;
+  useEffect(() => { load(); }, [load]);
 
-  function cell(row: Record<string, unknown>, field: string, kind?: string) {
+  if (!def) return <div className="center-note">Unknown view.</div>;
+
+  function cell(row: Row, field: string, kind?: string) {
     const v = row[field];
     if (kind === "money") return <span className="money">{money(v as number | null)}</span>;
     if (kind === "date") return day(v as string | null);
@@ -41,17 +46,45 @@ export function RecordsView() {
   }
 
   return (
-    <div className="tbl-wrap">
-      <table className="tbl">
-        <thead><tr>{def.columns.map((c) => <th key={c.field}>{c.label}</th>)}</tr></thead>
-        <tbody>
-          {rows.map((row, i) => (
-            <tr key={(row.id as string) ?? i}>
-              {def.columns.map((c) => <td key={c.field}>{cell(row, c.field, c.kind)}</td>)}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+    <>
+      {spec && (
+        <div className="row-actions">
+          <button className="btn" onClick={() => setEditing(null)}>New {spec.label.toLowerCase()}</button>
+          <span className="sub">{rows.length} {def.label.toLowerCase()}</span>
+        </div>
+      )}
+
+      {loading ? (
+        <div className="center-note">Loading {def.label.toLowerCase()}…</div>
+      ) : !rows.length ? (
+        <div className="center-note">
+          No {def.label.toLowerCase()} yet.{spec ? " Use “New” to add one." : ""}
+        </div>
+      ) : (
+        <div className="tbl-wrap">
+          <table className="tbl">
+            <thead><tr>{def.columns.map((c) => <th key={c.field}>{c.label}</th>)}</tr></thead>
+            <tbody>
+              {rows.map((row, i) => (
+                <tr key={(row.id as string) ?? i}
+                  style={spec ? { cursor: "pointer" } : undefined}
+                  onClick={spec ? () => setEditing(row) : undefined}>
+                  {def.columns.map((c) => <td key={c.field}>{cell(row, c.field, c.kind)}</td>)}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      )}
+
+      {spec && editing !== undefined && (
+        <RecordFormDrawer
+          spec={spec}
+          row={editing}
+          onClose={() => setEditing(undefined)}
+          onSaved={load}
+        />
+      )}
+    </>
   );
 }

@@ -1,28 +1,29 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
 import { useSession } from "../state/Session";
 import { Timeline } from "./Timeline";
+import { RecordFormDrawer } from "./RecordFormDrawer";
+import { CONTACT_FORM } from "../lib/forms";
 import type { Contact } from "../lib/types";
 
 export function ContactsView() {
   const { current } = useSession();
   const [rows, setRows] = useState<Contact[]>([]);
   const [q, setQ] = useState("");
-  const [open, setOpen] = useState<Contact | null>(null);
+  // undefined = closed, null = create, object = edit
+  const [editing, setEditing] = useState<Contact | null | undefined>(undefined);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    let alive = true;
-    async function load() {
-      if (!current) return;
-      setLoading(true);
-      const { data } = await supabase.from("contacts").select("*")
-        .eq("workspace_id", current.id).order("created_at", { ascending: false });
-      if (alive) { setRows((data as Contact[]) ?? []); setLoading(false); }
-    }
-    load();
-    return () => { alive = false; };
+  const load = useCallback(async () => {
+    if (!current) return;
+    setLoading(true);
+    const { data } = await supabase.from("contacts").select("*")
+      .eq("workspace_id", current.id).order("created_at", { ascending: false });
+    setRows((data as Contact[]) ?? []);
+    setLoading(false);
   }, [current]);
+
+  useEffect(() => { load(); }, [load]);
 
   const filtered = useMemo(() => {
     const s = q.trim().toLowerCase();
@@ -36,19 +37,21 @@ export function ContactsView() {
   return (
     <>
       <div className="row-actions">
+        <button className="btn" onClick={() => setEditing(null)}>New contact</button>
         <input className="input" style={{ maxWidth: 320 }} placeholder="Search contacts"
           value={q} onChange={(e) => setQ(e.target.value)} />
         <span className="sub">{filtered.length} of {rows.length}</span>
       </div>
+
       {!filtered.length ? (
-        <div className="center-note">No contacts yet. They arrive from Shopify, Vapi, or the supplier pipeline.</div>
+        <div className="center-note">No contacts yet. Use “New contact”, or they arrive from Shopify, Vapi, or the supplier pipeline.</div>
       ) : (
         <div className="tbl-wrap">
           <table className="tbl">
             <thead><tr><th>Name</th><th>Company</th><th>Email</th><th>Source</th></tr></thead>
             <tbody>
               {filtered.map((c) => (
-                <tr key={c.id} style={{ cursor: "pointer" }} onClick={() => setOpen(c)}>
+                <tr key={c.id} style={{ cursor: "pointer" }} onClick={() => setEditing(c)}>
                   <td>{c.name}</td>
                   <td>{c.company ?? "—"}</td>
                   <td>{c.email ?? "—"}</td>
@@ -59,26 +62,22 @@ export function ContactsView() {
           </table>
         </div>
       )}
-      {open && (
-        <>
-          <div className="scrim" onClick={() => setOpen(null)} />
-          <aside className="drawer" role="dialog" aria-label={open.name}>
-            <div className="dhead">
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "start" }}>
-                <div><div className="k">{open.kind}</div><div className="v">{open.name}</div></div>
-                <button className="x" onClick={() => setOpen(null)} aria-label="Close">×</button>
-              </div>
-            </div>
-            <div className="dbody">
-              <div className="field"><span className="fk">Company</span><span>{open.company ?? "—"}</span></div>
-              <div className="field"><span className="fk">Email</span><span>{open.email ?? "—"}</span></div>
-              <div className="field"><span className="fk">Phone</span><span>{open.phone ?? "—"}</span></div>
-              <div className="field"><span className="fk">Source</span><span>{open.source ?? "—"}</span></div>
-              <h3 style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", color: "var(--muted)", margin: "22px 0 4px" }}>Timeline</h3>
-              <Timeline contactId={open.id} />
-            </div>
-          </aside>
-        </>
+
+      {editing !== undefined && (
+        <RecordFormDrawer
+          spec={CONTACT_FORM}
+          row={editing as Record<string, unknown> | null}
+          onClose={() => setEditing(undefined)}
+          onSaved={load}
+          extra={editing ? (
+            <>
+              <h3 style={{ fontSize: 13, textTransform: "uppercase", letterSpacing: ".06em", color: "var(--muted)", margin: "0 0 4px" }}>
+                Timeline
+              </h3>
+              <Timeline contactId={(editing as Contact).id} />
+            </>
+          ) : undefined}
+        />
       )}
     </>
   );
