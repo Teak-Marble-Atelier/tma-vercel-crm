@@ -1,10 +1,6 @@
 {
   "rewrites": [
     {
-      "source": "/api/mail/unsubscribe",
-      "destination": "https://xsqrzaovptuhxgidiqaj.supabase.co/functions/v1/mail-webhook-unsubscribe"
-    },
-    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
