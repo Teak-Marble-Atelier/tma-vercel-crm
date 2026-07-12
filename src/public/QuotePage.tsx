@@ -93,7 +93,7 @@ export default function QuotePage() {
           <div className="q-eyebrow">Proposal</div>
           <div className="q-number">{q!.quote_number}</div>
         </div>
-        <div className="q-valid">Prepared for you through<br /><strong>{longDate(q!.valid_until)}</strong></div>
+        <div className="q-valid">Estimate good through<br /><strong>{longDate(q!.valid_until)}</strong></div>
       </div>
 
       <table className="q-table">
@@ -119,6 +119,7 @@ export default function QuotePage() {
       {(g.freight || g.processing) && (
         <div className="q-terms">
           {g.processing && <p>{g.processing}</p>}
+          {g.processing_disclaimer && <p style={{fontWeight: "bold"}}>{g.processing_disclaimer}</p>}
           {g.freight && <p>{g.freight}</p>}
           {g.white_glove && <p>{g.white_glove}</p>}
           {g.estimates_disclaimer && <p className="q-fine">{g.estimates_disclaimer}</p>}
