@@ -16,6 +16,7 @@ interface QuoteView {
   quote_number: string; status: string; valid_until: string;
   lines: Line[]; subtotal: number; white_glove_fee: number; total: number;
   terms_snapshot: any; requires_asf_acknowledgment: boolean; pdf_available: boolean;
+  pdf_url: string | null;
 }
 
 const usd = (n: number) =>
@@ -92,6 +93,11 @@ export default function QuotePage() {
         <div>
           <div className="q-eyebrow">Proposal</div>
           <div className="q-number">{q!.quote_number}</div>
+          {q!.pdf_url && (
+            <a href={q!.pdf_url} target="_blank" rel="noreferrer" className="q-pdf-link">
+              Download Proposal PDF
+            </a>
+          )}
         </div>
         <div className="q-valid">Estimate good through<br /><strong>{longDate(q!.valid_until)}</strong></div>
       </div>
