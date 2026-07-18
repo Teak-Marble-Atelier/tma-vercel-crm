@@ -43,6 +43,7 @@ interface MappedProduct {
   terms_class: string;
   supplier: string | null;
   white_glove_available: boolean;
+  white_glove_fee: number | null; // dollars, from products.white_glove_fee_cents
   has_current_terms: boolean;
 }
 
@@ -95,7 +96,7 @@ export function QuoteBuilder() {
         return;
       }
       setLoading(true);
-      const [{ data: cts }, { data: maps }, { data: terms }] = await Promise.all([
+      const [{ data: cts }, { data: maps }, { data: terms }, { data: prods }] = await Promise.all([
         supabase
           .from("contacts")
           .select("*")
@@ -110,6 +111,10 @@ export function QuoteBuilder() {
           .select("terms_class, supplier, white_glove_available")
           .eq("workspace_id", current.id)
           .is("effective_to", null),
+        supabase
+          .from("products")
+          .select("shopify_product_gid, white_glove_fee_cents")
+          .eq("workspace_id", current.id),
       ]);
       if (!alive) return;
 
@@ -121,18 +126,26 @@ export function QuoteBuilder() {
           t,
         ])),
       );
+      const feeByGid = new Map(
+        (((prods as Array<Record<string, unknown>>) ?? []).map((p) => [
+          p.shopify_product_gid as string,
+          p.white_glove_fee_cents == null ? null : Number(p.white_glove_fee_cents) / 100,
+        ])),
+      );
       const list: MappedProduct[] = (
         ((maps as Array<Record<string, unknown>>) ?? [])
       ).map((m) => {
         const cls = m.terms_class as string;
         const t = termsByClass.get(cls);
+        const gid = m.shopify_product_gid as string;
         return {
-          gid: m.shopify_product_gid as string,
+          gid,
           title: (m.title as string) ?? null,
           list_price: m.list_price == null ? null : Number(m.list_price),
           terms_class: cls,
           supplier: (t?.supplier as string) ?? null,
           white_glove_available: Boolean(t?.white_glove_available),
+          white_glove_fee: feeByGid.get(gid) ?? null,
           has_current_terms: Boolean(t),
         };
       });
@@ -177,7 +190,11 @@ export function QuoteBuilder() {
               white_glove_selected: p?.white_glove_available
                 ? l.white_glove_selected
                 : false,
-              white_glove_fee: p?.white_glove_available ? l.white_glove_fee : 0,
+              // auto-fill the catalog fee (currently $3,500 across eligible
+              // products); staff can still override via the Fee ($) field
+              white_glove_fee: p?.white_glove_available
+                ? p?.white_glove_fee ?? l.white_glove_fee
+                : 0,
             }
           : l,
       ),
@@ -397,8 +414,8 @@ export function QuoteBuilder() {
             <tr>
               <th style={{ minWidth: 240 }}>Product (mapped)</th>
               <th style={{ minWidth: 200 }}>Title on quote</th>
-              <th style={{ width: 70 }}>Qty</th>
-              <th style={{ width: 130 }}>Unit ($)</th>
+              <th style={{ width: 90 }}>Qty</th>
+              <th style={{ width: 150 }}>Unit ($)</th>
               <th style={{ width: 150 }}>White-glove</th>
               <th style={{ width: 120 }}>Line total</th>
               <th style={{ width: 40 }} />
