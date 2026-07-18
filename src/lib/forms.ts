@@ -29,6 +29,8 @@ export interface FormSpec {
 // ---- enum option lists (verbatim from the migrations) --------------------
 const SUPPLIER_STAGE = ["prospect", "outreach", "applied", "approved", "active", "declined", "dormant"];
 const SUPPLIER_TIER = ["gold", "silver", "bronze"];
+const SUPPLIER_STATUS = ["active", "pending_contract", "inactive"];
+const MAP_SCOPE = ["advertised_only", "includes_quotes", "no_map_policy"];
 const ORDER_STATUS = ["pending", "paid", "partially_refunded", "refunded", "cancelled"];
 const FULFILLMENT = ["unfulfilled", "processing", "shipped", "delivered", "returned"];
 const STONE_STATUS = ["sourcing", "available", "reserved", "on_memo", "sold", "returned"];
@@ -69,6 +71,26 @@ export const FORMS: Record<string, FormSpec> = {
       { field: "white_glove", label: "White-glove", type: "bool" },
       { field: "freight_terms", label: "Freight terms", type: "text" },
       { field: "agreement_status", label: "Agreement", type: "text", help: "none, sent, redlined, executed" },
+    ],
+  },
+  // The REAL, live-data suppliers table (0008_supplier_pricing.sql) — MAP
+  // pricing compliance tracking, distinct from tma_suppliers above (an
+  // earlier prospect/onboarding pipeline concept that's empty in production
+  // and unreferenced by anything else in the schema). This is the one the
+  // "Suppliers" nav link now points to.
+  suppliers: {
+    table: "suppliers",
+    label: "Supplier",
+    fields: [
+      { field: "name", label: "Supplier", type: "text", required: true },
+      { field: "status", label: "Status", type: "select", required: true, options: SUPPLIER_STATUS },
+      {
+        field: "map_scope", label: "MAP scope", type: "select", required: true, options: MAP_SCOPE,
+        help: "Whether MAP applies to advertised prices only, or to quotes too. Conservative default is includes_quotes until the contract clause is verified.",
+      },
+      { field: "map_scope_source", label: "MAP scope source", type: "text", help: "Citation: agreement section, welcome-doc page, or email date" },
+      { field: "map_schedule_received", label: "MAP schedule received", type: "bool" },
+      { field: "map_schedule_source", label: "MAP schedule source", type: "text", help: "Filename/email reference once received" },
     ],
   },
   tma_orders: {

@@ -50,14 +50,12 @@ export interface TableDef {
 export const TABLES: Record<Side, TableDef[]> = {
   tma: [
     {
-      key: "suppliers", label: "Suppliers", table: "tma_suppliers",
+      key: "suppliers", label: "Suppliers", table: "suppliers",
       columns: [
         { field: "name", label: "Supplier" },
-        { field: "stage", label: "Stage", kind: "pill" },
-        { field: "tier", label: "Tier", kind: "pill" },
-        { field: "category", label: "Category" },
-        { field: "dealer_margin_pct", label: "Margin %" },
-        { field: "agreement_status", label: "Agreement" },
+        { field: "status", label: "Status", kind: "pill" },
+        { field: "map_scope", label: "MAP Scope", kind: "pill" },
+        { field: "map_schedule_received", label: "MAP Schedule", kind: "bool" },
       ],
     },
     {
