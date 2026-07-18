@@ -58,16 +58,6 @@ export const TABLES: Record<Side, TableDef[]> = {
         { field: "map_schedule_received", label: "MAP Schedule", kind: "bool" },
       ],
     },
-    {
-      key: "orders", label: "Orders", table: "tma_orders",
-      columns: [
-        { field: "order_number", label: "Order" },
-        { field: "status", label: "Status", kind: "pill" },
-        { field: "fulfillment", label: "Fulfillment", kind: "pill" },
-        { field: "total_cents", label: "Total", kind: "money" },
-        { field: "placed_at", label: "Placed", kind: "date" },
-      ],
-    },
   ],
   roark: [
     {

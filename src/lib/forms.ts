@@ -31,8 +31,6 @@ const SUPPLIER_STAGE = ["prospect", "outreach", "applied", "approved", "active",
 const SUPPLIER_TIER = ["gold", "silver", "bronze"];
 const SUPPLIER_STATUS = ["active", "pending_contract", "inactive"];
 const MAP_SCOPE = ["advertised_only", "includes_quotes", "no_map_policy"];
-const ORDER_STATUS = ["pending", "paid", "partially_refunded", "refunded", "cancelled"];
-const FULFILLMENT = ["unfulfilled", "processing", "shipped", "delivered", "returned"];
 const STONE_STATUS = ["sourcing", "available", "reserved", "on_memo", "sold", "returned"];
 const PROVENANCE_EVENT = ["rough_sourced", "kp_certified", "imported", "cut", "graded", "sold"];
 
@@ -91,24 +89,6 @@ export const FORMS: Record<string, FormSpec> = {
       { field: "map_scope_source", label: "MAP scope source", type: "text", help: "Citation: agreement section, welcome-doc page, or email date" },
       { field: "map_schedule_received", label: "MAP schedule received", type: "bool" },
       { field: "map_schedule_source", label: "MAP schedule source", type: "text", help: "Filename/email reference once received" },
-    ],
-  },
-  tma_orders: {
-    table: "tma_orders",
-    label: "Order",
-    fields: [
-      { field: "order_number", label: "Order #", type: "text" },
-      { field: "status", label: "Status", type: "select", required: true, options: ORDER_STATUS },
-      { field: "fulfillment", label: "Fulfillment", type: "select", required: true, options: FULFILLMENT },
-      { field: "contact_id", label: "Customer", type: "select", fk: { table: "contacts", labelField: "name" } },
-      { field: "subtotal_cents", label: "Subtotal", type: "money" },
-      { field: "shipping_cents", label: "Shipping", type: "money" },
-      { field: "tax_cents", label: "Tax", type: "money" },
-      { field: "total_cents", label: "Total", type: "money" },
-      { field: "white_glove", label: "White-glove", type: "bool" },
-      { field: "freight_carrier", label: "Freight carrier", type: "text" },
-      { field: "tracking", label: "Tracking", type: "text" },
-      { field: "placed_at", label: "Placed", type: "date" },
     ],
   },
   roark_inventory: {
