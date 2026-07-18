@@ -78,3 +78,29 @@ export interface Quote {
   contacts?: { name: string; email: string | null } | null;
   quote_line_items?: QuoteLineItem[];
 }
+export type OrderStage = "received" | "processing" | "shipped" | "in_transit" | "delivery_scheduled" | "delivered" | "exception";
+export interface OrderStageEvent {
+  id: string;
+  order_id: string;
+  stage: OrderStage;
+  occurred_at: string;
+  source: string;
+}
+export interface Order {
+  id: string;
+  workspace_id: string;
+  contact_id: string | null;
+  quote_id: string | null;
+  order_number: string;
+  stage: OrderStage;
+  terms_class: string;
+  ltl_carrier: string | null;
+  pro_number: string | null;
+  tracking_url: string | null;
+  white_glove: boolean;
+  delivery_appointment: string | null;
+  exception_note: string | null;
+  updated_at: string;
+  contacts?: { name: string; email: string | null } | null;
+  order_stage_events?: OrderStageEvent[];
+}

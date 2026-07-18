@@ -91,6 +91,7 @@ table.tbl { width:100%; border-collapse:collapse; font-size:13.5px; }
 .pill { display:inline-block; padding:2px 9px; border-radius:999px; font-size:11.5px; font-weight:600;
   background:var(--panel-2); border:1px solid var(--line); color:var(--muted); text-transform:capitalize; }
 .pill.good { color:var(--accent); border-color:var(--accent); }
+.pill.warn { color:#b23; border-color:#e3b9b9; }
 
 /* ---- drawer ---- */
 .scrim { position:fixed; inset:0; background:rgba(0,0,0,.35); }

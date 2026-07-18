@@ -7,6 +7,7 @@ import { ContactsView } from "./components/ContactsView";
 import { RecordsView } from "./components/RecordsView";
 import { QuoteBuilder } from "./components/QuoteBuilder";
 import { QuotesView } from "./components/QuotesView";
+import { OrdersView } from "./components/OrdersView";
 import QuotePage from "./public/QuotePage";
 import StatusPage from "./public/StatusPage";
 import ClaimPage from "./public/ClaimPage";
@@ -42,6 +43,7 @@ function CrmApp({ session, loading }: { session: unknown; loading: boolean }) {
         <Route path="/records/:key" element={<RecordsView />} />
         <Route path="/quote/new" element={<QuoteBuilder />} />
         <Route path="/quotes" element={<QuotesView />} />
+        <Route path="/orders" element={<OrdersView />} />
         <Route path="*" element={<Navigate to="/board" replace />} />
       </Route>
     </Routes>
