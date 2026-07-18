@@ -47,3 +47,34 @@ export interface PipelineRow {
   acquired_cents?: number | null;
   updated_at: string;
 }
+export interface QuoteLineItem {
+  id: string;
+  quote_id: string;
+  shopify_product_gid: string;
+  title: string;
+  sku: string | null;
+  qty: number;
+  unit_price: number;
+  line_total: number;
+  white_glove_selected: boolean;
+  all_sales_final: boolean;
+}
+export interface Quote {
+  id: string;
+  workspace_id: string;
+  contact_id: string;
+  created_by: string;
+  quote_number: string;
+  status: "draft" | "sent" | "viewed" | "accepted" | "expired" | "withdrawn";
+  valid_until: string;
+  subtotal: number;
+  white_glove_fee: number;
+  total: number;
+  pdf_storage_path: string | null;
+  created_at: string;
+  sent_at: string | null;
+  first_viewed_at: string | null;
+  accepted_at: string | null;
+  contacts?: { name: string; email: string | null } | null;
+  quote_line_items?: QuoteLineItem[];
+}
