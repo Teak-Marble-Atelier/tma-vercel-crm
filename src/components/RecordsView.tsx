@@ -49,7 +49,9 @@ export function RecordsView() {
     <>
       {spec && (
         <div className="row-actions">
-          <button className="btn" onClick={() => setEditing(null)}>New {spec.label.toLowerCase()}</button>
+          {!spec.editOnly && (
+            <button className="btn" onClick={() => setEditing(null)}>New {spec.label.toLowerCase()}</button>
+          )}
           <span className="sub">{rows.length} {def.label.toLowerCase()}</span>
         </div>
       )}

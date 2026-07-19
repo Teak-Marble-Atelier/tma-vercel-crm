@@ -24,6 +24,7 @@ export interface FormSpec {
   label: string;         // singular noun, e.g. "Supplier"
   fields: FormField[];
   appendOnly?: boolean;  // ledger tables: create only, no edit/delete
+  editOnly?: boolean;    // machine-created rows humans only resolve: no "New" button
 }
 
 // ---- enum option lists (verbatim from the migrations) --------------------
@@ -33,6 +34,9 @@ const SUPPLIER_STATUS = ["active", "pending_contract", "inactive"];
 const MAP_SCOPE = ["advertised_only", "includes_quotes", "no_map_policy"];
 const STONE_STATUS = ["sourcing", "available", "reserved", "on_memo", "sold", "returned"];
 const PROVENANCE_EVENT = ["rough_sourced", "kp_certified", "imported", "cut", "graded", "sold"];
+// Margin Sentinel: 'supplier_pricing_updated' is the value the DB trigger keys
+// on to recompute margins — keep it exactly, it must match 0019.
+const PRICING_RESOLUTION = ["supplier_pricing_updated", "price_corrected", "no_change", "ignored"];
 
 // ---- contacts (shared core; ContactsView keeps its own Timeline) ---------
 export const CONTACT_FORM: FormSpec = {
@@ -126,6 +130,47 @@ export const FORMS: Record<string, FormSpec> = {
       { field: "kp_certificate", label: "KP certificate #", type: "text" },
       { field: "actor", label: "Actor", type: "text", help: "who / where in the chain" },
       { field: "note", label: "Note", type: "textarea" },
+    ],
+  },
+  // ---- Margin Sentinel (0019) -------------------------------------------
+  // Schedule 1 economics. dealer_cost/sell_price are dollar numerics, so they
+  // are "number" (step .01) NOT "money" — the money type stores cents.
+  sku_economics: {
+    table: "sku_economics",
+    label: "SKU economics",
+    fields: [
+      { field: "sku", label: "SKU", type: "text", required: true },
+      { field: "product_name", label: "Product", type: "text" },
+      { field: "supplier_id", label: "Supplier", type: "select", fk: { table: "suppliers", labelField: "name" } },
+      { field: "shopify_product_gid", label: "Shopify GID", type: "text" },
+      { field: "dealer_cost", label: "Dealer cost $", type: "number", step: "0.01", required: true, help: "Schedule 1 — entered on review, never scraped" },
+      { field: "freight_estimate", label: "Freight $", type: "number", step: "0.01" },
+      { field: "surcharges", label: "Surcharges $", type: "number", step: "0.01" },
+      { field: "sell_price", label: "Sell price $", type: "number", step: "0.01", required: true, help: "Live Shopify price (what the customer pays)" },
+      { field: "margin_floor_pct", label: "Floor %", type: "number", step: "0.01", help: "DSL floor; lower only for sanctioned exceptions (e.g. loss-leader)" },
+      { field: "floor_tolerance_usd", label: "Floor tolerance $", type: "number", step: "0.01", help: "$ of margin a SKU may fall short before it alerts (absorbs per-dollar rounding). Default $1." },
+      { field: "watch_standalone", label: "Watch standalone", type: "bool", help: "Off = collection/bundle-only SKU: shown in Margin Watch but never alerts" },
+      { field: "note", label: "Note", type: "textarea" },
+    ],
+  },
+  // Raised by the Supplier Pricing Watcher; humans only resolve. Setting
+  // resolution = supplier_pricing_updated fires the margin recompute (0019).
+  pricing_change_alerts: {
+    table: "pricing_change_alerts",
+    label: "Pricing alert",
+    editOnly: true,
+    fields: [
+      { field: "reviewed", label: "Reviewed", type: "bool" },
+      { field: "resolution", label: "Resolution", type: "select", options: PRICING_RESOLUTION, help: "supplier_pricing_updated recomputes margins and raises any below-floor breach" },
+    ],
+  },
+  // Raised by the Margin Sentinel; humans only resolve.
+  margin_breach_alerts: {
+    table: "margin_breach_alerts",
+    label: "Margin breach",
+    editOnly: true,
+    fields: [
+      { field: "resolved", label: "Resolved", type: "bool", help: "Close once the price or Schedule 1 is corrected" },
     ],
   },
 };

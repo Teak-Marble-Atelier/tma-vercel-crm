@@ -58,6 +58,57 @@ export const TABLES: Record<Side, TableDef[]> = {
         { field: "map_schedule_received", label: "MAP Schedule", kind: "bool" },
       ],
     },
+    // Margin Sentinel (0019). Dollar columns are plain numbers — money() expects
+    // cents, and these are dollar numerics. Margin Watch is a read-only view
+    // (no FORMS spec) so rows aren't clickable.
+    {
+      key: "margin_watch", label: "Margin Watch", table: "v_margin_watch",
+      columns: [
+        { field: "sku", label: "SKU" },
+        { field: "product_name", label: "Product" },
+        { field: "sell_price", label: "Sell $" },
+        { field: "loaded_cost", label: "Loaded $" },
+        { field: "margin_pct", label: "Margin %" },
+        { field: "margin_floor_pct", label: "Floor %" },
+        { field: "floor_shortfall_usd", label: "Short $" },
+        { field: "below_floor", label: "Below floor", kind: "bool" },
+        { field: "watch_standalone", label: "Watched", kind: "bool" },
+      ],
+    },
+    {
+      key: "sku_economics", label: "SKU Economics", table: "sku_economics",
+      columns: [
+        { field: "sku", label: "SKU" },
+        { field: "product_name", label: "Product" },
+        { field: "dealer_cost", label: "Dealer $" },
+        { field: "freight_estimate", label: "Freight $" },
+        { field: "sell_price", label: "Sell $" },
+        { field: "margin_floor_pct", label: "Floor %" },
+        { field: "watch_standalone", label: "Watched", kind: "bool" },
+      ],
+    },
+    {
+      key: "pricing_alerts", label: "Pricing Alerts", table: "pricing_change_alerts",
+      columns: [
+        { field: "detected_at", label: "Detected", kind: "date" },
+        { field: "source", label: "Source", kind: "pill" },
+        { field: "detail", label: "Detail" },
+        { field: "reviewed", label: "Reviewed", kind: "bool" },
+        { field: "resolution", label: "Resolution", kind: "pill" },
+      ],
+    },
+    {
+      key: "margin_breaches", label: "Margin Breaches", table: "margin_breach_alerts",
+      columns: [
+        { field: "sku", label: "SKU" },
+        { field: "product_name", label: "Product" },
+        { field: "margin_pct", label: "Margin %" },
+        { field: "margin_floor_pct", label: "Floor %" },
+        { field: "detected_at", label: "Detected", kind: "date" },
+        { field: "notified", label: "Notified", kind: "bool" },
+        { field: "resolved", label: "Resolved", kind: "bool" },
+      ],
+    },
   ],
   roark: [
     {
