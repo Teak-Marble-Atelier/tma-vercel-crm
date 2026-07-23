@@ -12,6 +12,7 @@ import QuotePage from "./public/QuotePage";
 import StatusPage from "./public/StatusPage";
 import ClaimPage from "./public/ClaimPage";
 import UnsubscribePage from "./public/UnsubscribePage";
+import SignPage from "./public/SignPage";
 import "./public/public.css";
 
 export default function App() {
@@ -25,7 +26,7 @@ export default function App() {
       <Route path="/status/:token" element={<StatusPage />} />
       <Route path="/claim/:token" element={<ClaimPage />} />
       <Route path="/unsubscribe" element={<UnsubscribePage />} />
-
+      <Route path="/sign/:token" element={<SignPage />} />
       {/* Everything else is the internal CRM, behind auth. */}
       <Route path="*" element={<CrmApp session={session} loading={loading} />} />
     </Routes>
