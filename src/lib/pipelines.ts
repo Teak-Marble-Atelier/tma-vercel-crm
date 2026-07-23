@@ -109,6 +109,27 @@ export const TABLES: Record<Side, TableDef[]> = {
         { field: "resolved", label: "Resolved", kind: "bool" },
       ],
     },
+    // ---- Competitor Bench (0023) — read-only, public-marketing intel. ----
+    {
+      key: "cb_longevity", label: "Competitor Ads", table: "v_cb_ad_longevity",
+      columns: [
+        { field: "competitor", label: "Competitor" },
+        { field: "headline", label: "Headline" },
+        { field: "angle_category", label: "Angle", kind: "pill" },
+        { field: "format", label: "Format", kind: "pill" },
+        { field: "longevity_days", label: "Days running" },
+        { field: "still_active", label: "Active", kind: "bool" },
+      ],
+    },
+    {
+      key: "cb_reports", label: "Pattern Reports", table: "cb_pattern_reports",
+      columns: [
+        { field: "period", label: "Period" },
+        { field: "report_type", label: "Type", kind: "pill" },
+        { field: "title", label: "Title" },
+        { field: "status", label: "Status", kind: "pill" },
+      ],
+    },
   ],
   roark: [
     {
@@ -132,6 +153,27 @@ export const TABLES: Record<Side, TableDef[]> = {
         { field: "kp_certificate", label: "KP Cert" },
         { field: "occurred_on", label: "Date", kind: "date" },
         { field: "actor", label: "Actor" },
+      ],
+    },
+    // ---- Competitor Bench (0023) — read-only, public-marketing intel. ----
+    {
+      key: "cb_longevity", label: "Competitor Ads", table: "v_cb_ad_longevity",
+      columns: [
+        { field: "competitor", label: "Competitor" },
+        { field: "headline", label: "Headline" },
+        { field: "angle_category", label: "Angle", kind: "pill" },
+        { field: "format", label: "Format", kind: "pill" },
+        { field: "longevity_days", label: "Days running" },
+        { field: "still_active", label: "Active", kind: "bool" },
+      ],
+    },
+    {
+      key: "cb_reports", label: "Pattern Reports", table: "cb_pattern_reports",
+      columns: [
+        { field: "period", label: "Period" },
+        { field: "report_type", label: "Type", kind: "pill" },
+        { field: "title", label: "Title" },
+        { field: "status", label: "Status", kind: "pill" },
       ],
     },
   ],
